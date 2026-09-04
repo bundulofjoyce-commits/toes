@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday, Toe Pincher!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --yellow:#FFF4B8;
+    --pink:#FFCFE3;
+    --orange:#FFB37A;
+    --coral:#FF8FA3;
+    --plum:#6B3F5C;
+    --cream:#FFFBF0;
+  }
+
+  *{ box-sizing:border-box; }
+
+  html{ scroll-behavior:smooth; }
+
+  body{
+    margin:0;
+    font-family:'Quicksand', sans-serif;
+    color:var(--plum);
+    background:linear-gradient(180deg, var(--yellow) 0%, var(--pink) 55%, var(--orange) 100%);
+    overflow-x:hidden;
+  }
+
+  h1,h2,.display{
+    font-family:'Baloo 2', cursive;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:2rem 1.5rem;
+    overflow:hidden;
+  }
+
+  .foot-wrap{
+    position:relative;
+    width:min(70vw, 300px);
+    height:min(70vw, 300px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    user-select:none;
+    -webkit-tap-highlight-color:transparent;
+    transition:transform .25s ease, opacity .5s ease;
+  }
+
+  .foot-wrap:active{ transform:scale(0.94); }
+
+  .foot-svg{
+    width:100%;
+    height:100%;
+    filter:drop-shadow(0 14px 20px rgba(107,63,92,0.2));
+    overflow:visible;
+  }
+
+  .toe-glow{
+    transform-origin:55px 58px;
+    animation:toePulse 1.4s ease-in-out infinite;
+    pointer-events:none;
+  }
+
+  @keyframes toePulse{
+    0%,100%{ transform:scale(0.85); opacity:0.55; }
+    50%{ transform:scale(1.3); opacity:1; }
+  }
+
+  .prompt-text{
+    margin-top:1.75rem;
+    font-size:clamp(1.6rem, 6vw, 2.5rem);
+    font-weight:700;
+    color:var(--plum);
+    letter-spacing:0.5px;
+    transition:opacity .4s ease, transform .4s ease;
+  }
+
+  .sub-text{
+    margin-top:0.5rem;
+    font-size:1rem;
+    font-weight:600;
+    color:#8a5c78;
+    opacity:0.8;
+    transition:opacity .4s ease;
+  }
+
+  /* celebration state */
+  .pre-celebrate{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    position:relative;
+    z-index:2;
+    transition:opacity .5s ease, transform .5s ease;
+  }
+
+  .hero.celebrating .pre-celebrate{
+    opacity:0;
+    transform:scale(0.3) rotate(15deg);
+    pointer-events:none;
+    position:absolute;
+  }
+
+  .fx-canvas{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    z-index:1;
+    pointer-events:none;
+  }
+
+  .celebration{
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    opacity:0;
+    position:relative;
+    z-index:2;
+    transform:translateY(20px) scale(0.9);
+    transition:opacity .6s ease, transform .6s ease;
+  }
+
+  .hero.celebrating .celebration{
+    display:flex;
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
+
+  .birthday-headline{
+    font-size:clamp(1.9rem, 7vw, 3.4rem);
+    font-weight:800;
+    line-height:1.15;
+    max-width:14ch;
+    text-shadow:0 3px 0 rgba(255,255,255,0.6), 0 2px 18px rgba(255,255,255,0.5);
+  }
+
+  .scroll-hint{
+    position:absolute;
+    bottom:2rem;
+    left:50%;
+    transform:translateX(-50%);
+    font-size:0.9rem;
+    font-weight:600;
+    color:#8a5c78;
+    opacity:0;
+    animation:none;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:0.25rem;
+    z-index:2;
+    transition:opacity .6s ease;
+  }
+
+  .hero.celebrating .scroll-hint{
+    opacity:0.85;
+    animation:bob 1.6s ease-in-out infinite;
+  }
+
+  @keyframes bob{
+    0%,100%{ transform:translate(-50%, 0); }
+    50%{ transform:translate(-50%, 8px); }
+  }
+
+  /* ---------- GALLERY ---------- */
+  .gallery{
+    min-height:100vh;
+    padding:4rem 1.25rem 5rem;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    background:var(--cream);
+    border-top-left-radius:48px;
+    border-top-right-radius:48px;
+    margin-top:-24px;
+    position:relative;
+    z-index:2;
+  }
+
+  .gallery h2{
+    font-size:clamp(1.5rem, 5vw, 2.1rem);
+    margin-bottom:0.35rem;
+    text-align:center;
+  }
+
+  .gallery p.hint{
+    font-size:0.95rem;
+    color:#a3768f;
+    margin-top:0;
+    margin-bottom:2.25rem;
+    text-align:center;
+  }
+
+  .stage{
+    position:relative;
+    width:100%;
+    max-width:640px;
+    aspect-ratio:4/5;
+    background:linear-gradient(160deg, var(--yellow), var(--pink));
+    border-radius:32px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    box-shadow:0 18px 40px rgba(107,63,92,0.15);
+  }
+
+  .stage img, .stage video{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    border-radius:32px;
+    display:none;
+  }
+
+  .stage img.active, .stage video.active{
+    display:block;
+  }
+
+  .empty-state{
+    text-align:center;
+    padding:2rem;
+    color:var(--plum);
+  }
+
+  .empty-state .big-emoji{
+    font-size:3rem;
+    display:block;
+    margin-bottom:0.75rem;
+  }
+
+  .nav-btn{
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    width:48px;
+    height:48px;
+    border-radius:50%;
+    border:none;
+    background:rgba(255,255,255,0.85);
+    color:var(--coral);
+    font-size:1.4rem;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    box-shadow:0 6px 16px rgba(107,63,92,0.18);
+    transition:transform .15s ease, background .15s ease;
+    z-index:5;
+  }
+
+  .nav-btn:hover{ transform:translateY(-50%) scale(1.08); background:#fff; }
+  .nav-btn:active{ transform:translateY(-50%) scale(0.95); }
+  .nav-btn.prev{ left:14px; }
+  .nav-btn.next{ right:14px; }
+
+  .dots{
+    display:flex;
+    gap:8px;
+    margin-top:1.5rem;
+    flex-wrap:wrap;
+    justify-content:center;
+    max-width:400px;
+  }
+
+  .dot{
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    background:var(--pink);
+    cursor:pointer;
+    transition:background .2s ease, transform .2s ease;
+  }
+
+  .dot.active{
+    background:var(--coral);
+    transform:scale(1.3);
+  }
+
+  .keyboard-hint{
+    margin-top:1.25rem;
+    font-size:0.85rem;
+    color:#a3768f;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<section class="hero" id="hero">
+  <canvas class="fx-canvas" id="fxCanvas"></canvas>
+
+  <div class="pre-celebrate" id="preCelebrate">
+    <div class="foot-wrap" id="footBtn" role="button" tabindex="0" aria-label="Pinch the toe">
+      <svg class="foot-svg" viewBox="0 0 220 280" xmlns="http://www.w3.org/2000/svg">
+        <!-- sole / top of foot -->
+        <path d="M70,95 C42,98 24,130 22,168 C20,208 32,246 62,264 C94,283 150,284 180,262 C207,242 214,204 206,166 C199,132 178,102 148,94 C128,89 92,90 70,95 Z"
+              fill="#FFD9C7" stroke="#6B3F5C" stroke-width="4" stroke-linejoin="round"/>
+
+        <!-- pinky toe -->
+        <ellipse cx="182" cy="70" rx="15" ry="21" fill="#FFD9C7" stroke="#6B3F5C" stroke-width="4"/>
+        <ellipse cx="182" cy="61" rx="6" ry="5" fill="#FFF1E8"/>
+        <!-- 4th toe -->
+        <ellipse cx="156" cy="58" rx="17" ry="25" fill="#FFD9C7" stroke="#6B3F5C" stroke-width="4"/>
+        <ellipse cx="156" cy="48" rx="7" ry="6" fill="#FFF1E8"/>
+        <!-- 3rd toe -->
+        <ellipse cx="127" cy="50" rx="19" ry="29" fill="#FFD9C7" stroke="#6B3F5C" stroke-width="4"/>
+        <ellipse cx="127" cy="38" rx="7.5" ry="6.5" fill="#FFF1E8"/>
+        <!-- 2nd toe -->
+        <ellipse cx="96" cy="52" rx="19" ry="30" fill="#FFD9C7" stroke="#6B3F5C" stroke-width="4"/>
+        <ellipse cx="96" cy="40" rx="7.5" ry="6.5" fill="#FFF1E8"/>
+        <!-- big toe (most prominent) -->
+        <ellipse cx="58" cy="60" rx="30" ry="42" fill="#FFCBB0" stroke="#6B3F5C" stroke-width="4.5"/>
+        <ellipse cx="58" cy="43" rx="12" ry="10" fill="#FFF1E8"/>
+
+        <!-- blush -->
+        <ellipse cx="150" cy="200" rx="16" ry="9" fill="#FF8FA3" opacity="0.35"/>
+        <ellipse cx="80" cy="205" rx="16" ry="9" fill="#FF8FA3" opacity="0.35"/>
+
+        <!-- glow ring over the big toe, click target highlight -->
+        <circle class="toe-glow" cx="58" cy="58" r="42" fill="#FF8FA3" opacity="0.32"/>
+      </svg>
+    </div>
+    <div class="prompt-text" id="promptText">pinch me!</div>
+    <div class="sub-text">(go on, tap the toe)</div>
+  </div>
+
+  <div class="celebration">
+    <h1 class="birthday-headline">HAPPY BIRTHDAY OUR DEAREST TOE PINCHER</h1>
+  </div>
+
+  <div class="scroll-hint">
+    <span>scroll for photos</span>
+    <span>⌄</span>
+  </div>
+</section>
+
+<section class="gallery" id="gallery">
+  <h2>the evidence</h2>
+  <p class="hint">use the arrows (or ← / → on your keyboard)</p>
+
+  <div class="stage" id="stage">
+    <div class="empty-state" id="emptyState">
+      <span class="big-emoji">🖼️</span>
+      add your photos &amp; videos to the <code>media</code> folder<br>and list them in the script below
+    </div>
+  </div>
+
+  <div class="dots" id="dots"></div>
+  <div class="keyboard-hint">tip: click the stage first, then use your arrow keys</div>
+</section>
+
+<script>
+  /* =========================================================
+     ADD YOUR PHOTOS & VIDEOS HERE
+     - Put your files in a folder named "media" next to this
+       index.html file.
+     - List each file below in the order you want it shown.
+     - type must be "image" or "video".
+     ========================================================= */
+  const mediaItems = [
+    { type: 'image', src: 'media/photo1.jpg' },
+    { type: 'image', src: 'media/photo2.jpg' },
+    { type: 'video', src: 'media/video1.mov' },
+  ];
+
+  // ---------- Toe pinch → celebration ----------
+  const hero = document.getElementById('hero');
+  const footBtn = document.getElementById('footBtn');
+
+  // ---------- Fireworks + confetti canvas ----------
+  const fxCanvas = document.getElementById('fxCanvas');
+  const fxCtx = fxCanvas.getContext('2d');
+  const palette = ['#FF8FA3', '#FFB37A', '#FFE08A', '#FFCFE3', '#FFFBF0', '#C97BB0'];
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let dpr = Math.min(window.devicePixelRatio || 1, 2);
+  let fxRunning = false;
+  let sparks = [];
+  let confettiPieces = [];
+  let fireworkTimer = null;
+  let confettiTimer = null;
+
+  function resizeFxCanvas(){
+    const rect = hero.getBoundingClientRect();
+    fxCanvas.width = rect.width * dpr;
+    fxCanvas.height = rect.height * dpr;
+    fxCanvas.style.width = rect.width + 'px';
+    fxCanvas.style.height = rect.height + 'px';
+    fxCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  window.addEventListener('resize', resizeFxCanvas);
+  resizeFxCanvas();
+
+  function rand(min, max){ return Math.random() * (max - min) + min; }
+
+  function spawnFirework(){
+    const w = fxCanvas.width / dpr, h = fxCanvas.height / dpr;
+    const x = rand(w * 0.15, w * 0.85);
+    const y = rand(h * 0.12, h * 0.5);
+    const color = palette[Math.floor(Math.random() * palette.length)];
+    const count = 32;
+    for(let i = 0; i < count; i++){
+      const angle = (Math.PI * 2 * i) / count + rand(-0.15, 0.15);
+      const speed = rand(1.4, 4.2);
+      sparks.push({
+        x, y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        color,
+        life: 1,
+        decay: rand(0.012, 0.02)
+      });
+    }
+  }
+
+  function spawnConfettiPiece(){
+    const w = fxCanvas.width / dpr;
+    confettiPieces.push({
+      x: rand(0, w),
+      y: -12,
+      vx: rand(-0.6, 0.6),
+      vy: rand(1.1, 2.4),
+      size: rand(5, 9),
+      color: palette[Math.floor(Math.random() * palette.length)],
+      rotation: rand(0, Math.PI * 2),
+      rotSpeed: rand(-0.1, 0.1)
+    });
+  }
+
+  function fxLoop(){
+    const w = fxCanvas.width / dpr, h = fxCanvas.height / dpr;
+    fxCtx.clearRect(0, 0, w, h);
+
+    sparks.forEach(p=>{
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.03;
+      p.life -= p.decay;
+    });
+    sparks = sparks.filter(p=> p.life > 0);
+    sparks.forEach(p=>{
+      fxCtx.globalAlpha = Math.max(p.life, 0);
+      fxCtx.fillStyle = p.color;
+      fxCtx.beginPath();
+      fxCtx.arc(p.x, p.y, 2.6, 0, Math.PI * 2);
+      fxCtx.fill();
+    });
+    fxCtx.globalAlpha = 1;
+
+    confettiPieces.forEach(c=>{
+      c.x += c.vx;
+      c.y += c.vy;
+      c.rotation += c.rotSpeed;
+    });
+    confettiPieces = confettiPieces.filter(c=> c.y < h + 20);
+    confettiPieces.forEach(c=>{
+      fxCtx.save();
+      fxCtx.translate(c.x, c.y);
+      fxCtx.rotate(c.rotation);
+      fxCtx.fillStyle = c.color;
+      fxCtx.fillRect(-c.size / 2, -c.size / 4, c.size, c.size / 2);
+      fxCtx.restore();
+    });
+
+    if(fxRunning) requestAnimationFrame(fxLoop);
+  }
+
+  function startFX(){
+    if(fxRunning) return;
+    fxRunning = true;
+
+    if(!reduceMotion){
+      // dramatic opening burst: several fireworks in quick succession + a big confetti flood
+      [0, 110, 220, 330, 440, 560, 680].forEach(delay=> setTimeout(spawnFirework, delay));
+      for(let i = 0; i < 160; i++) setTimeout(spawnConfettiPiece, rand(0, 800));
+
+      // intense phase
+      fireworkTimer = setInterval(spawnFirework, 260);
+      confettiTimer = setInterval(spawnConfettiPiece, 16);
+
+      // settle down into the calmer ambient level
+      setTimeout(()=>{
+        clearInterval(fireworkTimer);
+        clearInterval(confettiTimer);
+        fireworkTimer = setInterval(spawnFirework, 900);
+        confettiTimer = setInterval(spawnConfettiPiece, 55);
+      }, 2800);
+    } else {
+      spawnFirework();
+      for(let i = 0; i < 30; i++) spawnConfettiPiece();
+    }
+    requestAnimationFrame(fxLoop);
+  }
+
+  function celebrate(){
+    if(hero.classList.contains('celebrating')) return;
+    hero.classList.add('celebrating');
+    startFX();
+  }
+
+  footBtn.addEventListener('click', celebrate);
+  footBtn.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); celebrate(); }
+  });
+
+  // ---------- Gallery ----------
+  const stage = document.getElementById('stage');
+  const dotsWrap = document.getElementById('dots');
+  let current = 0;
+  let elements = [];
+
+  function buildGallery(){
+    if(mediaItems.length === 0) return; // keep empty state visible
+
+    document.getElementById('emptyState').remove();
+
+    mediaItems.forEach((item, i)=>{
+      let el;
+      if(item.type === 'video'){
+        el = document.createElement('video');
+        el.src = item.src;
+        el.controls = true;
+        el.playsInline = true;
+      } else {
+        el = document.createElement('img');
+        el.src = item.src;
+        el.alt = 'photo ' + (i+1);
+      }
+      el.addEventListener('error', ()=>{
+        el.replaceWith(Object.assign(document.createElement('div'),{
+          className:'empty-state',
+          innerHTML:'⚠️ failed to load <code>'+item.src+'</code>'
+        }));
+      });
+      stage.appendChild(el);
+      elements.push(el);
+
+      const dot = document.createElement('div');
+      dot.className = 'dot';
+      dot.addEventListener('click', ()=>show(i));
+      dotsWrap.appendChild(dot);
+    });
+
+    show(0);
+  }
+
+  function show(index){
+    if(elements.length === 0) return;
+    // pause any playing videos
+    elements.forEach(el=>{ if(el.tagName === 'VIDEO') el.pause(); });
+
+    current = (index + elements.length) % elements.length;
+    elements.forEach((el,i)=> el.classList.toggle('active', i === current));
+    [...dotsWrap.children].forEach((d,i)=> d.classList.toggle('active', i === current));
+  }
+
+  function addNavButtons(){
+    if(mediaItems.length < 2) return;
+    const prev = document.createElement('button');
+    prev.className = 'nav-btn prev';
+    prev.setAttribute('aria-label','previous');
+    prev.innerHTML = '‹';
+    prev.addEventListener('click', ()=>show(current-1));
+
+    const next = document.createElement('button');
+    next.className = 'nav-btn next';
+    next.setAttribute('aria-label','next');
+    next.innerHTML = '›';
+    next.addEventListener('click', ()=>show(current+1));
+
+    stage.appendChild(prev);
+    stage.appendChild(next);
+  }
+
+  buildGallery();
+  addNavButtons();
+
+  document.addEventListener('keydown', (e)=>{
+    if(elements.length === 0) return;
+    if(e.key === 'ArrowLeft') show(current-1);
+    if(e.key === 'ArrowRight') show(current+1);
+  });
+</script>
+
+</body>
+</html>
