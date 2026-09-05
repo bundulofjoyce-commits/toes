@@ -15,6 +15,8 @@
     --coral:#FF8FA3;
     --plum:#6B3F5C;
     --cream:#FFFBF0;
+    --ice:#BEE7F5;
+    --potato:#C9702E;
   }
 
   *{ box-sizing:border-box; }
@@ -26,204 +28,730 @@
     font-family:'Quicksand', sans-serif;
     color:var(--plum);
     background:linear-gradient(180deg, var(--yellow) 0%, var(--pink) 55%, var(--orange) 100%);
-    overflow-x:hidden;
+    background-attachment:fixed;
+    min-height:100vh;
   }
 
-  h1,h2,.display{
+  h1,h2,h3,.display{
     font-family:'Baloo 2', cursive;
   }
 
-  /* ---------- HERO ---------- */
-  .hero{
-    position:relative;
-    min-height:100vh;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    padding:2rem 1.5rem;
-    overflow:hidden;
-  }
+  button{ font-family:inherit; }
 
-  .foot-wrap{
-    position:relative;
-    width:min(70vw, 300px);
-    height:min(70vw, 300px);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-    user-select:none;
-    -webkit-tap-highlight-color:transparent;
-    transition:transform .25s ease, opacity .5s ease;
-  }
-
-  .foot-wrap:active{ transform:scale(0.94); }
-
-  .foot-svg{
-    width:100%;
-    height:100%;
-    filter:drop-shadow(0 14px 20px rgba(107,63,92,0.2));
-    overflow:visible;
-  }
-
-  .toe-glow{
-    transform-origin:55px 58px;
-    animation:toePulse 1.4s ease-in-out infinite;
-    pointer-events:none;
-  }
-
-  @keyframes toePulse{
-    0%,100%{ transform:scale(0.85); opacity:0.55; }
-    50%{ transform:scale(1.3); opacity:1; }
-  }
-
-  .prompt-text{
-    margin-top:1.75rem;
-    font-size:clamp(1.6rem, 6vw, 2.5rem);
-    font-weight:700;
-    color:var(--plum);
-    letter-spacing:0.5px;
-    transition:opacity .4s ease, transform .4s ease;
-  }
-
-  .sub-text{
-    margin-top:0.5rem;
-    font-size:1rem;
-    font-weight:600;
-    color:#8a5c78;
-    opacity:0.8;
-    transition:opacity .4s ease;
-  }
-
-  /* celebration state */
-  .pre-celebrate{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    position:relative;
-    z-index:2;
-    transition:opacity .5s ease, transform .5s ease;
-  }
-
-  .hero.celebrating .pre-celebrate{
-    opacity:0;
-    transform:scale(0.3) rotate(15deg);
-    pointer-events:none;
-    position:absolute;
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
   }
 
   .fx-canvas{
-    position:absolute;
+    position:fixed;
     inset:0;
     width:100%;
     height:100%;
-    z-index:1;
+    z-index:0;
     pointer-events:none;
   }
 
-  .celebration{
-    display:none;
+  .app{
+    position:relative;
+    z-index:1;
+    min-height:100vh;
+    display:flex;
     flex-direction:column;
     align-items:center;
-    opacity:0;
-    position:relative;
-    z-index:2;
-    transform:translateY(20px) scale(0.9);
-    transition:opacity .6s ease, transform .6s ease;
+    padding:2.25rem 1.25rem 3rem;
   }
 
-  .hero.celebrating .celebration{
+  .page-title{
+    text-align:center;
+    font-size:clamp(1.3rem, 4.5vw, 1.8rem);
+    margin:0 0 1.5rem;
+    color:var(--plum);
+    text-shadow:0 2px 0 rgba(255,255,255,0.5);
+  }
+
+  .foot-stage{
+    position:relative;
+    width:min(64vw, 260px);
     display:flex;
-    opacity:1;
-    transform:translateY(0) scale(1);
+    flex-direction:column;
+    align-items:center;
+    flex-shrink:0;
+  }
+
+  .foot-svg{
+    width:100%;
+    height:auto;
+    overflow:visible;
+    filter:drop-shadow(0 14px 20px rgba(107,63,92,0.2));
+  }
+
+  .toe-hit{
+    cursor:pointer;
+    transform-box:fill-box;
+    transform-origin:center;
+    transition:transform .18s ease;
+  }
+
+  .toe-hit:hover{ transform:scale(1.06); }
+  .toe-hit:active{ transform:scale(0.96); }
+  .toe-hit:focus{ outline:none; }
+  .toe-hit:focus-visible .toe-outline{ stroke:var(--coral); stroke-width:6; }
+
+  .hit-pad{
+    fill:rgba(0,0,0,0.001);
+    pointer-events:all;
+  }
+
+  .toe-ring{
+    fill:none;
+    stroke:var(--coral);
+    stroke-width:4;
+    opacity:0;
+    transition:opacity .25s ease;
+  }
+
+  .toe-hit.selected .toe-ring{ opacity:0.9; }
+
+  .toe-hit.hint-pulse .toe-ring{
+    animation:hintPulse 1.6s ease-in-out infinite;
+  }
+
+  @keyframes hintPulse{
+    0%,100%{ opacity:0.18; }
+    50%{ opacity:0.55; }
+  }
+
+  .tap-hint{
+    margin-top:0.9rem;
+    font-size:0.95rem;
+    font-weight:600;
+    color:#8a5c78;
+    opacity:0.85;
+    text-align:center;
+    transition:opacity .3s ease;
+  }
+
+  .foot-stage[data-active-toe] .tap-hint{ opacity:0; height:0; margin:0; overflow:hidden; }
+
+  .content-stage{
+    width:100%;
+    max-width:680px;
+    margin-top:1.75rem;
+    min-height:80px;
+  }
+
+  .toe-panel{
+    display:none;
+    background:var(--cream);
+    border-radius:28px;
+    padding:2rem 1.5rem;
+    box-shadow:0 18px 40px rgba(107,63,92,0.15);
+    animation:panelIn .4s ease;
+  }
+
+  .toe-panel.active{ display:block; }
+
+  @keyframes panelIn{
+    from{ opacity:0; transform:translateY(14px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  .toe-panel h2{
+    margin-top:0;
+    font-size:clamp(1.3rem, 4.5vw, 1.7rem);
+    text-align:center;
+  }
+
+  /* TOE 1 — birthday */
+  .panel-birthday{
+    background:transparent;
+    box-shadow:none;
+    padding:2.5rem 1.25rem;
+    text-align:center;
   }
 
   .birthday-headline{
-    font-size:clamp(1.9rem, 7vw, 3.4rem);
+    font-size:clamp(1.7rem, 6.5vw, 2.6rem);
     font-weight:800;
     line-height:1.15;
     max-width:14ch;
+    margin:0 auto;
     text-shadow:0 3px 0 rgba(255,255,255,0.6), 0 2px 18px rgba(255,255,255,0.5);
   }
 
-  .scroll-hint{
-    position:absolute;
-    bottom:2rem;
-    left:50%;
-    transform:translateX(-50%);
-    font-size:0.9rem;
+  .birthday-sub{
+    margin-top:0.75rem;
     font-weight:600;
     color:#8a5c78;
-    opacity:0;
-    animation:none;
+  }
+
+  /* TOE 2 — two envelopes */
+  .envelopes-row{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:1.75rem 2rem;
+    align-items:flex-start;
+  }
+
+  .letter-station{
     display:flex;
     flex-direction:column;
     align-items:center;
-    gap:0.25rem;
+    width:min(80vw, 260px);
+  }
+
+  .envelope{
+    position:relative;
+    width:100%;
+    height:172px;
+    cursor:pointer;
+    perspective:800px;
+  }
+
+  .envelope-body{
+    position:absolute;
+    inset:0;
+    background:var(--pink);
+    border:3px solid var(--plum);
+    border-radius:10px;
+    overflow:visible;
+    box-shadow:0 10px 24px rgba(107,63,92,0.18);
+  }
+
+  .envelope-body::before{
+    content:'';
+    position:absolute;
+    left:0; right:0; bottom:0;
+    height:70%;
+    background:var(--orange);
+    clip-path:polygon(0 100%, 50% 35%, 100% 100%);
     z-index:2;
-    transition:opacity .6s ease;
   }
 
-  .hero.celebrating .scroll-hint{
-    opacity:0.85;
-    animation:bob 1.6s ease-in-out infinite;
+  .envelope-flap{
+    position:absolute;
+    top:0; left:0; right:0;
+    height:58%;
+    background:var(--coral);
+    clip-path:polygon(0 0, 100% 0, 50% 92%);
+    transform-origin:top center;
+    transition:transform .6s cubic-bezier(.7,-0.2,.3,1.4);
+    z-index:4;
   }
 
-  @keyframes bob{
-    0%,100%{ transform:translate(-50%, 0); }
-    50%{ transform:translate(-50%, 8px); }
+  .envelope-heart{
+    position:absolute;
+    top:38%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    font-size:1.6rem;
+    z-index:3;
+    transition:opacity .3s ease;
   }
 
-  /* ---------- GALLERY ---------- */
-  .gallery{
-    min-height:100vh;
-    padding:4rem 1.25rem 5rem;
+  .envelope-note-peek{
+    position:absolute;
+    left:13%;
+    right:13%;
+    bottom:18%;
+    height:18px;
+    background:var(--cream);
+    border:2px solid var(--plum);
+    border-radius:6px 6px 0 0;
+    z-index:1;
+    transition:height .5s ease .12s, bottom .5s ease .12s;
+  }
+
+  .envelope.opening .envelope-flap{
+    transform:rotateX(165deg);
+  }
+
+  .envelope.opening .envelope-heart{ opacity:0; }
+
+  .envelope.opening .envelope-note-peek{
+    height:70%;
+    bottom:42%;
+  }
+
+  .envelope-label{
+    margin-top:1.1rem;
+    font-weight:700;
+    color:var(--plum);
+    text-align:center;
+  }
+
+  .letter-card{
+    display:none;
+    width:min(88vw, 420px);
+    margin-top:1.1rem;
+    background:
+      repeating-linear-gradient(transparent 0 27px, rgba(241,207,224,0.55) 27px 28px),
+      var(--cream);
+    border:2px solid #f1cfe0;
+    border-radius:6px;
+    box-shadow:0 12px 28px rgba(107,63,92,0.18), 0 0 0 6px rgba(255,255,255,0.5);
+    padding:1.75rem 1.5rem 1.25rem;
+    position:relative;
+    line-height:28px;
+    font-size:1.05rem;
+    color:#4a3040;
+    transform:rotate(-0.6deg);
+    animation:letterPop .45s ease;
+  }
+
+  .letter-card.active{ display:block; }
+
+  @keyframes letterPop{
+    from{ opacity:0; transform:translateY(16px) rotate(-0.6deg) scale(0.96); }
+    to{ opacity:1; transform:translateY(0) rotate(-0.6deg) scale(1); }
+  }
+
+  .letter-text{
+    white-space:pre-wrap;
+    min-height:80px;
+  }
+
+  .letters-controls{
+    display:flex;
+    justify-content:flex-end;
+    margin-top:1rem;
+  }
+
+  .pill-btn{
+    border:none;
+    border-radius:999px;
+    padding:0.55rem 1.3rem;
+    background:var(--coral);
+    color:#fff;
+    font-weight:700;
+    cursor:pointer;
+    box-shadow:0 6px 14px rgba(255,143,163,0.4);
+    transition:transform .15s ease;
+  }
+  .pill-btn:hover{ transform:translateY(-2px); }
+  .pill-btn:active{ transform:translateY(0) scale(0.97); }
+  .pill-btn.ghost{
+    background:transparent;
+    color:var(--plum);
+    box-shadow:none;
+    border:2px solid var(--plum);
+  }
+
+  /* TOE 3 — air fryer game */
+  .game-wrap{
     display:flex;
     flex-direction:column;
     align-items:center;
-    background:var(--cream);
-    border-top-left-radius:48px;
-    border-top-right-radius:48px;
-    margin-top:-24px;
+    gap:1rem;
+    -webkit-user-select:none;
+    user-select:none;
+  }
+
+  .game-scene{
+    position:relative;
+    width:100%;
+    height:min(72vw, 320px);
+    background:linear-gradient(160deg, #ffe9c2, #ffd7e0);
+    border-radius:22px;
+    border:2px solid #f1cfe0;
+    overflow:hidden;
+  }
+
+  .zone{
+    position:absolute;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-end;
+    text-align:center;
+  }
+
+  .zone-tray{
+    left:6%; bottom:10%;
+    width:24%;
+  }
+  .tray-plate{
+    width:100%;
+    aspect-ratio:1.6;
+    background:#fff;
+    border:3px solid var(--plum);
+    border-radius:50%;
+    box-shadow:inset 0 0 0 6px #ffe3ef;
+  }
+
+  .zone-fryer{
+    left:50%;
+    top:8%;
+    transform:translateX(-50%);
+    width:38%;
+  }
+  .fryer-body{
+    width:100%;
+    aspect-ratio:1;
+    background:#e7e0f5;
+    border:3px solid var(--plum);
+    border-radius:24px 24px 34px 34px;
+    position:relative;
+    box-shadow:0 8px 16px rgba(107,63,92,0.15);
+  }
+  .fryer-body::before{
+    content:'';
+    position:absolute;
+    left:8%; right:8%; top:12%;
+    height:34%;
+    background:#cfc4ec;
+    border-radius:14px;
+    border:2px solid var(--plum);
+  }
+  .fryer-basket{
+    position:absolute;
+    left:14%; right:14%; bottom:10%;
+    height:44%;
+    background:#fff8ea;
+    border:2px dashed var(--plum);
+    border-radius:12px;
+  }
+  .cook-timer{
+    position:absolute;
+    left:8%; right:8%;
+    top:16%;
+    z-index:2;
+    font-family:'Baloo 2', cursive;
+    font-size:clamp(0.85rem, 3.4vw, 1.15rem);
+    font-weight:800;
+    color:var(--plum);
+    text-align:center;
+    line-height:1.1;
+    pointer-events:none;
+  }
+  .fryer-btn{
+    border:none;
+    margin-top:0.55rem;
+    border-radius:999px;
+    padding:0.4rem 1rem;
+    font-weight:700;
+    font-size:0.85rem;
+    cursor:pointer;
+    background:var(--coral);
+    color:#fff;
+    box-shadow:0 4px 10px rgba(255,143,163,0.4);
+  }
+  .fryer-btn.on{ background:var(--plum); }
+
+  .steam{
+    position:absolute;
+    top:-6px; left:50%;
+    transform:translateX(-50%);
+    font-size:1.1rem;
+    opacity:0;
+    pointer-events:none;
+  }
+  .fryer-body.running .steam{
+    animation:steamRise 1.4s ease-in infinite;
+  }
+  @keyframes steamRise{
+    0%{ opacity:0; transform:translate(-50%, 0) scale(0.8); }
+    30%{ opacity:0.8; }
+    100%{ opacity:0; transform:translate(-50%, -26px) scale(1.2); }
+  }
+  .fryer-body.running{ animation:fryerShake 0.35s ease-in-out infinite; }
+  @keyframes fryerShake{
+    0%,100%{ transform:rotate(0deg); }
+    50%{ transform:rotate(0.6deg); }
+  }
+
+  .zone-ice{
+    right:5%; top:12%;
+    width:28%;
+  }
+  .ice-bowl{
+    width:100%;
+    aspect-ratio:1.3;
+    background:linear-gradient(180deg, #eaf9ff, var(--ice));
+    border:3px solid var(--plum);
+    border-radius:0 0 50% 50% / 0 0 60% 60%;
+    position:relative;
+    overflow:hidden;
+  }
+  .ice-bowl::before{
+    content:'❄️ ❄️ ❄️';
+    position:absolute;
+    top:6px; left:0; right:0;
+    text-align:center;
+    font-size:0.8rem;
+  }
+
+  .potato{
+    position:absolute;
+    width:52px;
+    height:38px;
+    left:0; top:0;
+    background:radial-gradient(circle at 35% 30%, #e0864a, var(--potato));
+    border:2.5px solid var(--plum);
+    border-radius:50% 50% 48% 48% / 60% 60% 45% 45%;
+    cursor:grab;
+    z-index:10;
+    touch-action:none;
+    transition:box-shadow .15s ease;
+  }
+  .potato.dragging{
+    cursor:grabbing;
+    box-shadow:0 10px 18px rgba(107,63,92,0.3);
+    z-index:20;
+  }
+  .potato.iced::after{
+    content:'';
+    position:absolute;
+    inset:-3px;
+    border-radius:inherit;
+    background:rgba(190,231,245,0.55);
+  }
+
+  .game-result{
+    text-align:center;
+    font-weight:700;
+    padding:0.85rem 1rem;
+    border-radius:16px;
+    background:#fff2ee;
+    max-width:420px;
+  }
+  .game-result.success{ background:#eafff1; }
+
+  .potato-win-modal{
+    position:fixed;
+    inset:0;
+    z-index:12;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:1.25rem;
+    background:rgba(107,63,92,0.24);
+    backdrop-filter:blur(3px);
+  }
+
+  .potato-win-modal.active{
+    display:flex;
+    animation:modalFadeIn .22s ease-out;
+  }
+
+  .potato-win-card{
+    position:relative;
+    width:min(92vw, 520px);
+    overflow:hidden;
+    border:3px solid var(--plum);
+    border-radius:28px;
+    padding:2rem 1.35rem 1.45rem;
+    text-align:center;
+    background:
+      radial-gradient(circle at 22% 18%, rgba(255,255,255,0.95) 0 10%, transparent 11%),
+      radial-gradient(circle at 82% 24%, rgba(255,207,227,0.9) 0 9%, transparent 10%),
+      linear-gradient(160deg, #fff9d6, #ffcfe3 52%, #ffb37a);
+    box-shadow:0 28px 70px rgba(107,63,92,0.34), 0 0 0 8px rgba(255,255,255,0.48);
+    animation:potatoWinPop .56s cubic-bezier(.2,1.35,.35,1);
+  }
+
+  .potato-win-card::before,
+  .potato-win-card::after{
+    content:'✨ 💕 ✨ 🐾 ✨';
+    position:absolute;
+    left:0;
+    right:0;
+    font-size:1.35rem;
+    letter-spacing:0;
+    pointer-events:none;
+    animation:sparkleMarch 1.4s ease-in-out infinite;
+  }
+
+  .potato-win-card::before{ top:0.65rem; }
+  .potato-win-card::after{
+    bottom:0.75rem;
+    animation-delay:.7s;
+  }
+
+  .frog-stage{
+    position:relative;
+    width:170px;
+    height:158px;
+    margin:0.3rem auto 0.65rem;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .frog-dance{
     position:relative;
     z-index:2;
+    font-size:6.4rem;
+    line-height:1;
+    filter:drop-shadow(0 12px 12px rgba(107,63,92,0.23));
+    transform-origin:center 76%;
+    animation:frogDance .54s ease-in-out infinite;
   }
 
-  .gallery h2{
-    font-size:clamp(1.5rem, 5vw, 2.1rem);
-    margin-bottom:0.35rem;
+  .frog-stage::before,
+  .frog-stage::after{
+    content:'';
+    position:absolute;
+    bottom:18px;
+    width:52px;
+    height:14px;
+    border-radius:999px;
+    background:rgba(255,143,163,0.44);
+    animation:frogFoot .54s ease-in-out infinite;
+  }
+
+  .frog-stage::before{ left:18px; transform:rotate(18deg); }
+  .frog-stage::after{ right:18px; transform:rotate(-18deg); animation-delay:.27s; }
+
+  .frog-note{
+    position:absolute;
+    top:8px;
+    font-size:1.2rem;
+    opacity:0;
+    animation:musicPop 1.08s ease-in-out infinite;
+  }
+
+  .frog-note.left{ left:6px; }
+  .frog-note.right{ right:8px; animation-delay:.42s; }
+
+  .potato-win-title{
+    margin:0;
+    font-size:clamp(1.85rem, 8vw, 3.15rem);
+    line-height:0.96;
+    color:var(--plum);
+    text-shadow:0 3px 0 rgba(255,255,255,0.58);
+  }
+
+  .potato-win-sub{
+    margin:0.8rem auto 1.25rem;
+    font-family:'Baloo 2', cursive;
+    font-size:clamp(1.15rem, 5vw, 1.55rem);
+    font-weight:800;
+    color:#8a5c78;
+  }
+
+  .potato-win-close{
+    position:relative;
+    z-index:2;
+    min-width:9rem;
+  }
+
+  @keyframes modalFadeIn{
+    from{ opacity:0; }
+    to{ opacity:1; }
+  }
+
+  @keyframes potatoWinPop{
+    0%{ opacity:0; transform:translateY(32px) scale(0.72) rotate(-5deg); }
+    62%{ opacity:1; transform:translateY(-8px) scale(1.06) rotate(2deg); }
+    100%{ opacity:1; transform:translateY(0) scale(1) rotate(0); }
+  }
+
+  @keyframes frogDance{
+    0%,100%{ transform:translateY(0) rotate(-7deg) scale(1); }
+    25%{ transform:translateY(-15px) rotate(8deg) scale(1.08,0.95); }
+    50%{ transform:translateY(2px) rotate(6deg) scale(0.96,1.08); }
+    75%{ transform:translateY(-11px) rotate(-10deg) scale(1.06,0.98); }
+  }
+
+  @keyframes frogFoot{
+    0%,100%{ opacity:.35; width:40px; }
+    50%{ opacity:.75; width:64px; }
+  }
+
+  @keyframes musicPop{
+    0%{ opacity:0; transform:translateY(20px) scale(.6) rotate(-10deg); }
+    35%{ opacity:1; }
+    100%{ opacity:0; transform:translateY(-24px) scale(1.1) rotate(12deg); }
+  }
+
+  @keyframes sparkleMarch{
+    0%,100%{ transform:translateX(-12px); opacity:.58; }
+    50%{ transform:translateX(12px); opacity:1; }
+  }
+
+  /* TOE 4 — cats */
+  .cats-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));
+    gap:1.1rem;
+    align-items:end;
+  }
+
+  .cat-card{
+    position:relative;
+    cursor:pointer;
+    touch-action:manipulation;
+    -webkit-tap-highlight-color:transparent;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:0.35rem;
+  }
+
+  .cat-card img{
+    width:100%;
+    height:auto;
+    max-height:190px;
+    object-fit:contain;
+    filter:drop-shadow(0 10px 14px rgba(107,63,92,0.22));
+    transform-origin:center bottom;
+    transition:transform .18s ease;
+    pointer-events:none;
+    user-select:none;
+  }
+
+  .cat-card:hover img{ transform:scale(1.04); }
+  .cat-card.reacting img{ animation:catWiggle .42s ease; }
+
+  @keyframes catWiggle{
+    0%{ transform:scale(1) rotate(0); }
+    25%{ transform:scale(1.08) rotate(-6deg); }
+    55%{ transform:scale(1.06) rotate(5deg); }
+    100%{ transform:scale(1) rotate(0); }
+  }
+
+  .pet-fx{
+    position:absolute;
+    font-size:1.25rem;
+    pointer-events:none;
+    animation:petFloat 0.9s ease-out forwards;
+    z-index:3;
+  }
+  @keyframes petFloat{
+    0%{ opacity:1; transform:translate(-50%,-50%) scale(0.6); }
+    70%{ opacity:1; }
+    100%{ opacity:0; transform:translate(-50%,-140%) scale(1.15); }
+  }
+
+  .pet-hint{
+    margin-top:1rem;
+    font-size:0.9rem;
+    color:#8a5c78;
+    font-weight:600;
     text-align:center;
   }
 
-  .gallery p.hint{
-    font-size:0.95rem;
-    color:#a3768f;
-    margin-top:0;
-    margin-bottom:2.25rem;
-    text-align:center;
-  }
-
+  /* TOE 5 — memories */
   .stage{
     position:relative;
     width:100%;
-    max-width:640px;
     aspect-ratio:4/5;
     background:linear-gradient(160deg, var(--yellow), var(--pink));
-    border-radius:32px;
+    border-radius:24px;
     display:flex;
     align-items:center;
     justify-content:center;
     overflow:hidden;
-    box-shadow:0 18px 40px rgba(107,63,92,0.15);
   }
 
   .stage img, .stage video{
     width:100%;
     height:100%;
-    object-fit:cover;
-    border-radius:32px;
+    object-fit:contain;
+    background:linear-gradient(160deg, var(--yellow), var(--pink));
+    border-radius:24px;
     display:none;
   }
 
@@ -238,7 +766,7 @@
   }
 
   .empty-state .big-emoji{
-    font-size:3rem;
+    font-size:2.4rem;
     display:block;
     margin-bottom:0.75rem;
   }
@@ -247,13 +775,13 @@
     position:absolute;
     top:50%;
     transform:translateY(-50%);
-    width:48px;
-    height:48px;
+    width:44px;
+    height:44px;
     border-radius:50%;
     border:none;
     background:rgba(255,255,255,0.85);
     color:var(--coral);
-    font-size:1.4rem;
+    font-size:1.3rem;
     display:flex;
     align-items:center;
     justify-content:center;
@@ -264,17 +792,15 @@
   }
 
   .nav-btn:hover{ transform:translateY(-50%) scale(1.08); background:#fff; }
-  .nav-btn:active{ transform:translateY(-50%) scale(0.95); }
-  .nav-btn.prev{ left:14px; }
-  .nav-btn.next{ right:14px; }
+  .nav-btn.prev{ left:10px; }
+  .nav-btn.next{ right:10px; }
 
   .dots{
     display:flex;
     gap:8px;
-    margin-top:1.5rem;
+    margin-top:1.1rem;
     flex-wrap:wrap;
     justify-content:center;
-    max-width:400px;
   }
 
   .dot{
@@ -292,129 +818,265 @@
   }
 
   .keyboard-hint{
-    margin-top:1.25rem;
-    font-size:0.85rem;
+    margin-top:0.9rem;
+    font-size:0.8rem;
     color:#a3768f;
+    text-align:center;
   }
 
-  @media (prefers-reduced-motion: reduce){
-    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+  @media (max-width: 520px){
+    .envelope{ height:150px; }
+    .cats-grid{ grid-template-columns:repeat(2, 1fr); }
   }
 </style>
 </head>
 <body>
 
-<section class="hero" id="hero">
-  <canvas class="fx-canvas" id="fxCanvas"></canvas>
+<canvas class="fx-canvas" id="fxCanvas"></canvas>
 
-  <div class="pre-celebrate" id="preCelebrate">
-    <div class="foot-wrap" id="footBtn" role="button" tabindex="0" aria-label="Pinch the toe">
-      <svg class="foot-svg" viewBox="0 0 220 280" xmlns="http://www.w3.org/2000/svg">
-        <!-- sole / top of foot -->
-        <path d="M70,95 C42,98 24,130 22,168 C20,208 32,246 62,264 C94,283 150,284 180,262 C207,242 214,204 206,166 C199,132 178,102 148,94 C128,89 92,90 70,95 Z"
-              fill="#FFD9C7" stroke="#6B3F5C" stroke-width="4" stroke-linejoin="round"/>
+<div class="app">
+  <p class="page-title">tap a toe to see what's inside</p>
 
-        <!-- pinky toe -->
-        <ellipse cx="182" cy="70" rx="15" ry="21" fill="#FFD9C7" stroke="#6B3F5C" stroke-width="4"/>
+  <div class="foot-stage" id="footStage">
+    <svg class="foot-svg" viewBox="0 0 220 280" xmlns="http://www.w3.org/2000/svg">
+      <path d="M70,95 C42,98 24,130 22,168 C20,208 32,246 62,264 C94,283 150,284 180,262 C207,242 214,204 206,166 C199,132 178,102 148,94 C128,89 92,90 70,95 Z"
+            fill="#FFD9C7" stroke="#6B3F5C" stroke-width="4" stroke-linejoin="round"/>
+      <ellipse cx="150" cy="200" rx="16" ry="9" fill="#FF8FA3" opacity="0.35"/>
+      <ellipse cx="80" cy="205" rx="16" ry="9" fill="#FF8FA3" opacity="0.35"/>
+
+      <g class="toe-hit hint-pulse" data-toe="5" tabindex="0" role="button" aria-label="Pinky toe: favourite memories">
+        <circle class="hit-pad" cx="182" cy="66" r="30"/>
+        <circle class="toe-ring" cx="182" cy="66" r="27"/>
+        <ellipse class="toe-outline" cx="182" cy="70" rx="15" ry="21" fill="#FFD9C7" stroke="#6B3F5C" stroke-width="4"/>
         <ellipse cx="182" cy="61" rx="6" ry="5" fill="#FFF1E8"/>
-        <!-- 4th toe -->
-        <ellipse cx="156" cy="58" rx="17" ry="25" fill="#FFD9C7" stroke="#6B3F5C" stroke-width="4"/>
+      </g>
+
+      <g class="toe-hit hint-pulse" data-toe="4" tabindex="0" role="button" aria-label="Fourth toe: pet the cats">
+        <circle class="hit-pad" cx="156" cy="55" r="32"/>
+        <circle class="toe-ring" cx="156" cy="55" r="29"/>
+        <ellipse class="toe-outline" cx="156" cy="58" rx="17" ry="25" fill="#FFD9C7" stroke="#6B3F5C" stroke-width="4"/>
         <ellipse cx="156" cy="48" rx="7" ry="6" fill="#FFF1E8"/>
-        <!-- 3rd toe -->
-        <ellipse cx="127" cy="50" rx="19" ry="29" fill="#FFD9C7" stroke="#6B3F5C" stroke-width="4"/>
+      </g>
+
+      <g class="toe-hit hint-pulse" data-toe="3" tabindex="0" role="button" aria-label="Middle toe: sweet potato">
+        <circle class="hit-pad" cx="127" cy="48" r="34"/>
+        <circle class="toe-ring" cx="127" cy="48" r="31"/>
+        <ellipse class="toe-outline" cx="127" cy="50" rx="19" ry="29" fill="#FFD9C7" stroke="#6B3F5C" stroke-width="4"/>
         <ellipse cx="127" cy="38" rx="7.5" ry="6.5" fill="#FFF1E8"/>
-        <!-- 2nd toe -->
-        <ellipse cx="96" cy="52" rx="19" ry="30" fill="#FFD9C7" stroke="#6B3F5C" stroke-width="4"/>
+      </g>
+
+      <g class="toe-hit hint-pulse" data-toe="2" tabindex="0" role="button" aria-label="Second toe: letters">
+        <circle class="hit-pad" cx="96" cy="50" r="34"/>
+        <circle class="toe-ring" cx="96" cy="50" r="31"/>
+        <ellipse class="toe-outline" cx="96" cy="52" rx="19" ry="30" fill="#FFD9C7" stroke="#6B3F5C" stroke-width="4"/>
         <ellipse cx="96" cy="40" rx="7.5" ry="6.5" fill="#FFF1E8"/>
-        <!-- big toe (most prominent) -->
-        <ellipse cx="58" cy="60" rx="30" ry="42" fill="#FFCBB0" stroke="#6B3F5C" stroke-width="4.5"/>
+      </g>
+
+      <g class="toe-hit hint-pulse" data-toe="1" tabindex="0" role="button" aria-label="Big toe: birthday message">
+        <circle class="hit-pad" cx="58" cy="58" r="45"/>
+        <circle class="toe-ring" cx="58" cy="58" r="42"/>
+        <ellipse class="toe-outline" cx="58" cy="60" rx="30" ry="42" fill="#FFCBB0" stroke="#6B3F5C" stroke-width="4.5"/>
         <ellipse cx="58" cy="43" rx="12" ry="10" fill="#FFF1E8"/>
+      </g>
+    </svg>
+    <div class="tap-hint" id="tapHint">tap a toe to begin</div>
+  </div>
 
-        <!-- blush -->
-        <ellipse cx="150" cy="200" rx="16" ry="9" fill="#FF8FA3" opacity="0.35"/>
-        <ellipse cx="80" cy="205" rx="16" ry="9" fill="#FF8FA3" opacity="0.35"/>
+  <div class="content-stage" id="contentStage">
 
-        <!-- glow ring over the big toe, click target highlight -->
-        <circle class="toe-glow" cx="58" cy="58" r="42" fill="#FF8FA3" opacity="0.32"/>
-      </svg>
+    <div class="toe-panel panel-birthday" id="panel-1" data-toe="1">
+      <h1 class="birthday-headline">HAPPY BIRTHDAY OUR DEAREST TOE PINCHER</h1>
+      <p class="birthday-sub">tap the big toe again anytime for another burst 🎆</p>
     </div>
-    <div class="prompt-text" id="promptText">pinch me!</div>
-    <div class="sub-text">(go on, tap the toe)</div>
-  </div>
 
-  <div class="celebration">
-    <h1 class="birthday-headline">HAPPY BIRTHDAY OUR DEAREST TOE PINCHER</h1>
-  </div>
-
-  <div class="scroll-hint">
-    <span>scroll for photos</span>
-    <span>⌄</span>
-  </div>
-</section>
-
-<section class="gallery" id="gallery">
-  <h2>the evidence</h2>
-  <p class="hint">use the arrows (or ← / → on your keyboard)</p>
-
-  <div class="stage" id="stage">
-    <div class="empty-state" id="emptyState">
-      <span class="big-emoji">🖼️</span>
-      add your photos &amp; videos to the <code>media</code> folder<br>and list them in the script below
+    <div class="toe-panel" id="panel-2" data-toe="2">
+      <h2>a couple of letters for you</h2>
+      <div class="envelopes-row" id="envelopesRow"></div>
     </div>
-  </div>
 
-  <div class="dots" id="dots"></div>
-  <div class="keyboard-hint">tip: click the stage first, then use your arrow keys</div>
-</section>
+    <div class="toe-panel" id="panel-3" data-toe="3">
+      <h2>🍠</h2>
+      <div class="game-wrap">
+        <div class="game-scene" id="gameScene">
+          <div class="zone zone-tray" id="zoneTray">
+            <div class="tray-plate"></div>
+          </div>
+
+          <div class="zone zone-fryer" id="zoneFryer">
+            <div class="fryer-body" id="fryerBody">
+              <span class="steam">💨</span>
+              <div class="cook-timer" id="cookTimer">0.0 seconds</div>
+              <div class="fryer-basket" id="fryerBasket"></div>
+            </div>
+            <button class="fryer-btn" id="fryerBtn" type="button">start</button>
+          </div>
+
+          <div class="zone zone-ice" id="zoneIce">
+            <div class="ice-bowl"></div>
+          </div>
+
+          <div class="potato" id="potato"></div>
+        </div>
+
+        <div class="game-result" id="gameResult" style="display:none;"></div>
+        <button class="pill-btn ghost" id="gameRetryBtn" type="button" style="display:none;">TRY AGAIN</button>
+        <div class="potato-win-modal" id="potatoWinModal" role="dialog" aria-modal="true" aria-labelledby="potatoWinTitle">
+          <div class="potato-win-card">
+            <div class="frog-stage" aria-hidden="true">
+              <span class="frog-note left">♪</span>
+              <span class="frog-dance">🐸</span>
+              <span class="frog-note right">♫</span>
+            </div>
+            <h3 class="potato-win-title" id="potatoWinTitle">YOU PERFECTED THE SWEET POTATO</h3>
+            <p class="potato-win-sub">the frog approves with unreasonable enthusiasm</p>
+            <button class="pill-btn potato-win-close" id="potatoWinClose" type="button">continue</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toe-panel" id="panel-4" data-toe="4">
+      <h2>pet the cats</h2>
+      <div class="cats-grid" id="catsGrid"></div>
+      <p class="pet-hint">tap a cat 🐾</p>
+    </div>
+
+    <div class="toe-panel" id="panel-5" data-toe="5">
+      <h2>favourite memories</h2>
+      <div class="stage" id="stage">
+        <div class="empty-state" id="emptyState">
+          <span class="big-emoji">🖼️</span>
+          add your photos &amp; videos to the <code>media</code> folder<br>and list them in the script below
+        </div>
+      </div>
+      <div class="dots" id="dots"></div>
+      <p class="keyboard-hint">use the arrows, or click the stage and press ← / →</p>
+    </div>
+
+  </div>
+</div>
 
 <script>
-  /* =========================================================
-     ADD YOUR PHOTOS & VIDEOS HERE
-     - Put your files in a folder named "media" next to this
-       index.html file.
-     - List each file below in the order you want it shown.
-     - type must be "image" or "video".
-     ========================================================= */
-  const mediaItems = [
-    { type: 'image', src: 'media/photo1.jpg' },
-    { type: 'image', src: 'media/photo2.jpg' },
-    { type: 'video', src: 'media/video1.mov' },
-  ];
+/* =========================================================================
+   CONFIGURATION — edit these!
+   ========================================================================= */
 
-  // ---------- Toe pinch → celebration ----------
-  const hero = document.getElementById('hero');
-  const footBtn = document.getElementById('footBtn');
+// ---- TOE 2: letters (each envelope has its own letter) ----
+const letters = [
+  {
+    name: "Letter 1",
+    text: `LETTER 1 TEXT HERE`
+  },
+  {
+    name: "Letter 2",
+    text: `LETTER 2 TEXT HERE`
+  }
+];
 
-  // ---------- Fireworks + confetti canvas ----------
-  const fxCanvas = document.getElementById('fxCanvas');
-  const fxCtx = fxCanvas.getContext('2d');
-  const palette = ['#FF8FA3', '#FFB37A', '#FFE08A', '#FFCFE3', '#FFFBF0', '#C97BB0'];
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+// ---- TOE 4: cat photos + sounds ----
+const cats = [
+  { src: "media/cats/brownboy.png" },
+  { src: "media/cats/mulan.png" },
+  { src: "media/cats/mashed.png" },
+  { src: "media/cats/meatball.png" },
+  { src: "media/cats/the-brown-one.png" }
+];
+
+const catSounds = {
+  purr: "media/audio/purr.wav"
+};
+
+// ---- TOE 5: photo/video memories ----
+const mediaItems = [
+  { type: "image", src: "media/photo1.jpg" },
+  { type: "image", src: "media/photo2.jpg" },
+  { type: "image", src: "media/IMG_1567.png" },
+  { type: "video", src: "media/video1.mov" }
+];
+
+
+/* =========================================================================
+   TOE NAVIGATION
+   ========================================================================= */
+const footStage = document.getElementById("footStage");
+const toeButtons = Array.from(document.querySelectorAll(".toe-hit"));
+const panels = Array.from(document.querySelectorAll(".toe-panel"));
+let activeToe = null;
+
+const toeHandlers = {
+  1: { enter: null, leave: null },
+  2: { enter: null, leave: null },
+  3: { enter: null, leave: null },
+  4: { enter: null, leave: null },
+  5: { enter: null, leave: null }
+};
+
+function selectToe(n){
+  if(activeToe === n){
+    if(n === 1 && toeHandlers[1].enter) toeHandlers[1].enter({ resumed: true });
+    return;
+  }
+
+  if(activeToe !== null && toeHandlers[activeToe].leave){
+    toeHandlers[activeToe].leave();
+  }
+
+  activeToe = n;
+  footStage.setAttribute("data-active-toe", n);
+
+  toeButtons.forEach(btn=>{
+    btn.classList.remove("hint-pulse");
+    btn.classList.toggle("selected", Number(btn.dataset.toe) === n);
+  });
+
+  panels.forEach(p=> p.classList.toggle("active", Number(p.dataset.toe) === n));
+
+  if(toeHandlers[n].enter) toeHandlers[n].enter({ resumed: false });
+}
+
+toeButtons.forEach(btn=>{
+  const n = Number(btn.dataset.toe);
+  btn.addEventListener("click", ()=> selectToe(n));
+  btn.addEventListener("keydown", (e)=>{
+    if(e.key === "Enter" || e.key === " "){ e.preventDefault(); selectToe(n); }
+  });
+});
+
+
+/* =========================================================================
+   TOE 1 — Birthday
+   ========================================================================= */
+(function celebrationFX(){
+  const fxCanvas = document.getElementById("fxCanvas");
+  const fxCtx = fxCanvas.getContext("2d");
+  const palette = ["#FF8FA3", "#FFB37A", "#FFE08A", "#FFCFE3", "#FFFBF0", "#C97BB0"];
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   let dpr = Math.min(window.devicePixelRatio || 1, 2);
   let fxRunning = false;
   let sparks = [];
   let confettiPieces = [];
-  let fireworkTimer = null;
-  let confettiTimer = null;
+  let gentleConfettiTimer = null;
+  let burstFireworkTimer = null;
+  let burstConfettiTimer = null;
+  let burstTimeouts = [];
 
   function resizeFxCanvas(){
-    const rect = hero.getBoundingClientRect();
-    fxCanvas.width = rect.width * dpr;
-    fxCanvas.height = rect.height * dpr;
-    fxCanvas.style.width = rect.width + 'px';
-    fxCanvas.style.height = rect.height + 'px';
+    fxCanvas.width = window.innerWidth * dpr;
+    fxCanvas.height = window.innerHeight * dpr;
+    fxCanvas.style.width = window.innerWidth + "px";
+    fxCanvas.style.height = window.innerHeight + "px";
     fxCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
-  window.addEventListener('resize', resizeFxCanvas);
+  window.addEventListener("resize", resizeFxCanvas);
   resizeFxCanvas();
 
   function rand(min, max){ return Math.random() * (max - min) + min; }
 
   function spawnFirework(){
-    const w = fxCanvas.width / dpr, h = fxCanvas.height / dpr;
+    const w = window.innerWidth, h = window.innerHeight;
     const x = rand(w * 0.15, w * 0.85);
-    const y = rand(h * 0.12, h * 0.5);
+    const y = rand(h * 0.1, h * 0.45);
     const color = palette[Math.floor(Math.random() * palette.length)];
     const count = 32;
     for(let i = 0; i < count; i++){
@@ -431,22 +1093,26 @@
     }
   }
 
-  function spawnConfettiPiece(){
-    const w = fxCanvas.width / dpr;
+  function spawnConfettiPiece(options){
+    const opts = options || {};
+    const w = window.innerWidth;
     confettiPieces.push({
       x: rand(0, w),
-      y: -12,
-      vx: rand(-0.6, 0.6),
-      vy: rand(1.1, 2.4),
-      size: rand(5, 9),
+      y: opts.y != null ? opts.y : -12,
+      vx: rand(opts.vxMin != null ? opts.vxMin : -0.25, opts.vxMax != null ? opts.vxMax : 0.25),
+      vy: rand(opts.vyMin != null ? opts.vyMin : 0.55, opts.vyMax != null ? opts.vyMax : 1.2),
+      size: rand(opts.sizeMin != null ? opts.sizeMin : 4, opts.sizeMax != null ? opts.sizeMax : 7),
       color: palette[Math.floor(Math.random() * palette.length)],
       rotation: rand(0, Math.PI * 2),
-      rotSpeed: rand(-0.1, 0.1)
+      rotSpeed: rand(-0.045, 0.045)
     });
+
+    const maxPieces = window.innerWidth < 520 ? 80 : 130;
+    if(confettiPieces.length > maxPieces) confettiPieces.splice(0, confettiPieces.length - maxPieces);
   }
 
   function fxLoop(){
-    const w = fxCanvas.width / dpr, h = fxCanvas.height / dpr;
+    const w = window.innerWidth, h = window.innerHeight;
     fxCtx.clearRect(0, 0, w, h);
 
     sparks.forEach(p=>{
@@ -483,121 +1149,644 @@
     if(fxRunning) requestAnimationFrame(fxLoop);
   }
 
-  function startFX(){
+  function clearBurstTimers(){
+    clearInterval(burstFireworkTimer);
+    clearInterval(burstConfettiTimer);
+    burstTimeouts.forEach(clearTimeout);
+    burstTimeouts = [];
+    burstFireworkTimer = null;
+    burstConfettiTimer = null;
+  }
+
+  function startLoop(){
     if(fxRunning) return;
     fxRunning = true;
-
-    if(!reduceMotion){
-      // dramatic opening burst: several fireworks in quick succession + a big confetti flood
-      [0, 110, 220, 330, 440, 560, 680].forEach(delay=> setTimeout(spawnFirework, delay));
-      for(let i = 0; i < 160; i++) setTimeout(spawnConfettiPiece, rand(0, 800));
-
-      // intense phase
-      fireworkTimer = setInterval(spawnFirework, 260);
-      confettiTimer = setInterval(spawnConfettiPiece, 16);
-
-      // settle down into the calmer ambient level
-      setTimeout(()=>{
-        clearInterval(fireworkTimer);
-        clearInterval(confettiTimer);
-        fireworkTimer = setInterval(spawnFirework, 900);
-        confettiTimer = setInterval(spawnConfettiPiece, 55);
-      }, 2800);
-    } else {
-      spawnFirework();
-      for(let i = 0; i < 30; i++) spawnConfettiPiece();
-    }
     requestAnimationFrame(fxLoop);
   }
 
-  function celebrate(){
-    if(hero.classList.contains('celebrating')) return;
-    hero.classList.add('celebrating');
-    startFX();
+  function startGentleConfetti(){
+    startLoop();
+    if(reduceMotion || gentleConfettiTimer) return;
+    const interval = window.innerWidth < 520 ? 220 : 165;
+    gentleConfettiTimer = setInterval(()=> spawnConfettiPiece(), interval);
+    for(let i = 0; i < 24; i++)
+      spawnConfettiPiece({ y: rand(0, window.innerHeight), vyMin:0.45, vyMax:1 });
   }
 
-  footBtn.addEventListener('click', celebrate);
-  footBtn.addEventListener('keydown', (e)=>{
-    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); celebrate(); }
+  function burstFX(mode){
+    clearBurstTimers();
+    startLoop();
+
+    if(!reduceMotion){
+      const isPotato = mode === "potato";
+      const fireworkDelays = isPotato ? [0, 90, 180, 270, 380, 520, 680, 860] : [0, 110, 220, 330, 440, 560, 680];
+      const confettiCount = isPotato ? 230 : 160;
+
+      fireworkDelays.forEach(delay=> burstTimeouts.push(setTimeout(spawnFirework, delay)));
+      for(let i = 0; i < confettiCount; i++){
+        burstTimeouts.push(setTimeout(()=> spawnConfettiPiece({
+          vxMin:-0.9,
+          vxMax:0.9,
+          vyMin:1.2,
+          vyMax:2.8,
+          sizeMin:5,
+          sizeMax:10
+        }), rand(0, isPotato ? 1100 : 800)));
+      }
+
+      burstFireworkTimer = setInterval(spawnFirework, isPotato ? 220 : 260);
+      burstConfettiTimer = setInterval(()=> spawnConfettiPiece({
+        vxMin:-0.8,
+        vxMax:0.8,
+        vyMin:1.1,
+        vyMax:2.6,
+        sizeMin:5,
+        sizeMax:10
+      }), isPotato ? 12 : 16);
+
+      burstTimeouts.push(setTimeout(clearBurstTimers, isPotato ? 3600 : 2800));
+    } else {
+      spawnFirework();
+      for(let i = 0; i < 30; i++) spawnConfettiPiece({ vyMin:1.1, vyMax:2.4, sizeMin:5, sizeMax:9 });
+    }
+  }
+
+  window.__startCelebrationFX = function(mode){
+    if(mode === "subtle"){
+      startGentleConfetti();
+    } else {
+      burstFX(mode);
+    }
+  };
+  window.__stopCelebrationFX = clearBurstTimers;
+
+  toeHandlers[1].enter = function(){
+    burstFX("birthday");
+  };
+
+  startGentleConfetti();
+})();
+
+
+/* =========================================================================
+   TOE 2 — Letters
+   ========================================================================= */
+(function toe2Letters(){
+  const row = document.getElementById("envelopesRow");
+  const stations = [];
+
+  letters.forEach((letter, i)=>{
+    const station = document.createElement("div");
+    station.className = "letter-station";
+    station.innerHTML =
+      '<div class="envelope" role="button" tabindex="0" aria-label="Open ' + letter.name + '">' +
+        '<div class="envelope-body">' +
+          '<div class="envelope-note-peek"></div>' +
+          '<div class="envelope-flap"></div>' +
+          '<div class="envelope-heart">💌</div>' +
+        "</div>" +
+      "</div>" +
+      '<p class="envelope-label">' + letter.name + "</p>" +
+      '<article class="letter-card">' +
+        '<div class="letter-text"></div>' +
+        '<div class="letters-controls">' +
+          '<button class="pill-btn ghost" type="button">close</button>' +
+        "</div>" +
+      "</article>";
+
+    const envelope = station.querySelector(".envelope");
+    const card = station.querySelector(".letter-card");
+    const textEl = station.querySelector(".letter-text");
+    const closeBtn = station.querySelector("button");
+    textEl.textContent = letter.text;
+
+    let opened = false;
+    let openTimer = null;
+
+    function openEnvelope(){
+      if(opened) return;
+      opened = true;
+      envelope.classList.add("opening");
+      openTimer = setTimeout(()=>{
+        card.classList.add("active");
+      }, 520);
+    }
+
+    function closeEnvelope(){
+      opened = false;
+      clearTimeout(openTimer);
+      envelope.classList.remove("opening");
+      card.classList.remove("active");
+    }
+
+    envelope.addEventListener("click", openEnvelope);
+    envelope.addEventListener("keydown", (e)=>{
+      if(e.key === "Enter" || e.key === " "){ e.preventDefault(); openEnvelope(); }
+    });
+    closeBtn.addEventListener("click", closeEnvelope);
+
+    stations.push({ closeEnvelope });
+    row.appendChild(station);
   });
 
-  // ---------- Gallery ----------
-  const stage = document.getElementById('stage');
-  const dotsWrap = document.getElementById('dots');
+  toeHandlers[2].leave = function(){
+    stations.forEach(s=> s.closeEnvelope());
+  };
+})();
+
+
+/* =========================================================================
+   TOE 3 — Sweet Potato Game
+   Hidden solution (never shown): ~15s fry, ice bath, ~20s fry.
+   ========================================================================= */
+(function toe3Game(){
+  const scene = document.getElementById("gameScene");
+  const potato = document.getElementById("potato");
+  const fryerBody = document.getElementById("fryerBody");
+  const fryerBtn = document.getElementById("fryerBtn");
+  const timerEl = document.getElementById("cookTimer");
+  const resultEl = document.getElementById("gameResult");
+  const retryBtn = document.getElementById("gameRetryBtn");
+  const winModal = document.getElementById("potatoWinModal");
+  const winCloseBtn = document.getElementById("potatoWinClose");
+
+  const zones = {
+    tray: document.getElementById("zoneTray"),
+    fryer: document.getElementById("zoneFryer"),
+    ice: document.getElementById("zoneIce")
+  };
+
+  const FRY1_MIN = 14000, FRY1_MAX = 16000;
+  const FRY2_MIN = 19000, FRY2_MAX = 21000;
+
+  const failMessages = [
+    "that potato has seen things.",
+    "absolutely not.",
+    "the potato respectfully disagrees.",
+    "culinary crimes were committed.",
+    "perhaps we leave the cooking to someone else.",
+    "interesting. unfortunately, no.",
+    "somewhere, a chef felt a disturbance.",
+    "the potato has filed a complaint.",
+    "not today, tuber.",
+    "the air fryer is embarrassed for you.",
+    "that's a rock now, technically.",
+    "bold choice. incorrect choice."
+  ];
+
+  let location = "tray";
+  let fryerOn = false;
+  let finished = false;
+  let cookMs = 0;
+  let cookStartedAt = 0;
+  let timerRaf = null;
+  let frySessions = [];
+  let icedAfterFirst = false;
+
+  function centerOf(el){
+    const r = el.getBoundingClientRect();
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  }
+
+  function placePotatoAt(x, y){
+    const sceneRect = scene.getBoundingClientRect();
+    potato.style.left = (x - sceneRect.left - potato.offsetWidth / 2) + "px";
+    potato.style.top = (y - sceneRect.top - potato.offsetHeight / 2) + "px";
+  }
+
+  function snapToZone(zoneName){
+    const target = centerOf(zones[zoneName]);
+    placePotatoAt(target.x, target.y - 14);
+  }
+
+  function formatSeconds(ms){
+    return (ms / 1000).toFixed(1) + " seconds";
+  }
+
+  function displayTime(ms){
+    timerEl.textContent = formatSeconds(ms);
+  }
+
+  function currentCookMs(){
+    if(fryerOn && location === "fryer" && cookStartedAt){
+      return cookMs + (performance.now() - cookStartedAt);
+    }
+    return cookMs;
+  }
+
+  function tickTimer(){
+    if(!(fryerOn && location === "fryer") || finished){
+      timerRaf = null;
+      return;
+    }
+    displayTime(currentCookMs());
+    timerRaf = requestAnimationFrame(tickTimer);
+  }
+
+  function startTimerLoop(){
+    if(!timerRaf) timerRaf = requestAnimationFrame(tickTimer);
+  }
+
+  function stopTimerLoop(){
+    if(timerRaf){
+      cancelAnimationFrame(timerRaf);
+      timerRaf = null;
+    }
+  }
+
+  function beginCookClock(){
+    cookMs = 0;
+    cookStartedAt = performance.now();
+    displayTime(0);
+    startTimerLoop();
+  }
+
+  function pauseCookClock(){
+    cookMs = currentCookMs();
+    cookStartedAt = 0;
+    displayTime(cookMs);
+    stopTimerLoop();
+  }
+
+  function finalizeCookIfAny(){
+    const duration = cookMs;
+    stopTimerLoop();
+    displayTime(duration);
+    if(duration > 250){
+      frySessions.push(duration);
+      cookMs = 0;
+      cookStartedAt = 0;
+      if(frySessions.length >= 2) evaluate();
+    } else {
+      cookMs = 0;
+      cookStartedAt = 0;
+    }
+  }
+
+  function toggleFryer(){
+    if(finished) return;
+
+    if(fryerOn){
+      if(location === "fryer") pauseCookClock();
+      fryerOn = false;
+      fryerBtn.textContent = "start";
+      fryerBtn.classList.remove("on");
+      fryerBody.classList.remove("running");
+      if(location === "fryer") finalizeCookIfAny();
+    } else {
+      fryerOn = true;
+      fryerBtn.textContent = "stop";
+      fryerBtn.classList.add("on");
+      fryerBody.classList.add("running");
+      if(location === "fryer") beginCookClock();
+    }
+  }
+
+  function moveTo(zoneName){
+    if(finished) return;
+
+    if(location === "fryer" && zoneName !== "fryer"){
+      if(fryerOn) pauseCookClock();
+      finalizeCookIfAny();
+    }
+
+    if(location === "ice" && zoneName !== "ice"){
+      potato.classList.remove("iced");
+    }
+
+    if(zoneName === "fryer"){
+      location = "fryer";
+      if(fryerOn) beginCookClock();
+    } else if(zoneName === "ice"){
+      location = "ice";
+      potato.classList.add("iced");
+      if(frySessions.length === 1) icedAfterFirst = true;
+    } else {
+      location = "tray";
+    }
+
+    snapToZone(zoneName);
+  }
+
+  function inRange(val, min, max){ return val >= min && val <= max; }
+
+  function showWinModal(){
+    winModal.classList.add("active");
+    winCloseBtn.focus();
+  }
+
+  function closeWinModal(){
+    winModal.classList.remove("active");
+  }
+
+  function evaluate(){
+    if(finished) return;
+    finished = true;
+    fryerOn = false;
+    fryerBtn.textContent = "start";
+    fryerBtn.classList.remove("on");
+    fryerBody.classList.remove("running");
+    stopTimerLoop();
+
+    const first = frySessions[0];
+    const second = frySessions[1];
+    const success = icedAfterFirst && inRange(first, FRY1_MIN, FRY1_MAX) && inRange(second, FRY2_MIN, FRY2_MAX);
+
+    resultEl.style.display = "block";
+    retryBtn.style.display = "inline-block";
+
+    if(success){
+      resultEl.classList.add("success");
+      resultEl.textContent = "the potato has ascended. the frog has been notified.";
+      if(window.__startCelebrationFX) window.__startCelebrationFX("potato");
+      showWinModal();
+    } else {
+      resultEl.classList.remove("success");
+      resultEl.textContent = failMessages[Math.floor(Math.random() * failMessages.length)];
+    }
+  }
+
+  function resetGame(){
+    finished = false;
+    location = "tray";
+    fryerOn = false;
+    cookMs = 0;
+    cookStartedAt = 0;
+    frySessions = [];
+    icedAfterFirst = false;
+    stopTimerLoop();
+    fryerBtn.textContent = "start";
+    fryerBtn.classList.remove("on");
+    fryerBody.classList.remove("running");
+    potato.classList.remove("iced");
+    resultEl.style.display = "none";
+    resultEl.classList.remove("success");
+    retryBtn.style.display = "none";
+    closeWinModal();
+    displayTime(0);
+    if(window.__stopCelebrationFX) window.__stopCelebrationFX();
+    requestAnimationFrame(()=> snapToZone("tray"));
+  }
+
+  fryerBtn.addEventListener("click", (e)=>{ e.stopPropagation(); toggleFryer(); });
+  retryBtn.addEventListener("click", resetGame);
+  winCloseBtn.addEventListener("click", closeWinModal);
+  winModal.addEventListener("click", (e)=>{
+    if(e.target === winModal) closeWinModal();
+  });
+  document.addEventListener("keydown", (e)=>{
+    if(e.key === "Escape" && winModal.classList.contains("active")) closeWinModal();
+  });
+
+  let dragging = false;
+  let dragOffsetX = 0, dragOffsetY = 0;
+
+  function findNearestZone(x, y){
+    let best = "tray", bestDist = Infinity;
+    for(const name of Object.keys(zones)){
+      const c = centerOf(zones[name]);
+      const d = Math.hypot(c.x - x, c.y - y);
+      if(d < bestDist){ bestDist = d; best = name; }
+    }
+    return bestDist < 110 ? best : location;
+  }
+
+  potato.addEventListener("pointerdown", (e)=>{
+    if(finished) return;
+    dragging = true;
+    potato.classList.add("dragging");
+    potato.setPointerCapture(e.pointerId);
+    const r = potato.getBoundingClientRect();
+    dragOffsetX = e.clientX - r.left - r.width / 2;
+    dragOffsetY = e.clientY - r.top - r.height / 2;
+  });
+
+  potato.addEventListener("pointermove", (e)=>{
+    if(!dragging) return;
+    placePotatoAt(e.clientX - dragOffsetX, e.clientY - dragOffsetY);
+  });
+
+  function endDrag(e){
+    if(!dragging) return;
+    dragging = false;
+    potato.classList.remove("dragging");
+    moveTo(findNearestZone(e.clientX, e.clientY));
+  }
+  potato.addEventListener("pointerup", endDrag);
+  potato.addEventListener("pointercancel", endDrag);
+
+  toeHandlers[3].enter = function(){
+    requestAnimationFrame(()=> snapToZone("tray"));
+  };
+  toeHandlers[3].leave = function(){
+    resetGame();
+  };
+})();
+
+
+/* =========================================================================
+   TOE 4 — Cats
+   ========================================================================= */
+(function toe4Cats(){
+  const grid = document.getElementById("catsGrid");
+  const fxChars = ["💕", "✨", "🐾", "💖"];
+
+  let audioContext = null;
+  const purrAudio = new Audio(catSounds.purr);
+  purrAudio.preload = "auto";
+  purrAudio.volume = 0.28;
+
+  function stopCatAudio(){
+    purrAudio.pause();
+    try { purrAudio.currentTime = 0; } catch(e){}
+  }
+
+  function getAudioContext(){
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if(!AudioCtx) return null;
+    if(!audioContext) audioContext = new AudioCtx();
+    if(audioContext.state === "suspended") audioContext.resume();
+    return audioContext;
+  }
+
+  function playMeow(){
+    const ctx = getAudioContext();
+    if(!ctx) return;
+
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const wobble = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const wobbleGain = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+
+    osc.type = "triangle";
+    wobble.type = "sine";
+    filter.type = "bandpass";
+    filter.frequency.setValueAtTime(950, now);
+    filter.Q.setValueAtTime(8, now);
+    wobble.frequency.setValueAtTime(18, now);
+    wobbleGain.gain.setValueAtTime(42, now);
+
+    osc.frequency.setValueAtTime(720, now);
+    osc.frequency.exponentialRampToValueAtTime(430, now + 0.16);
+    osc.frequency.exponentialRampToValueAtTime(820, now + 0.34);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.24, now + 0.035);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.42);
+
+    wobble.connect(wobbleGain);
+    wobbleGain.connect(osc.frequency);
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(now);
+    wobble.start(now);
+    osc.stop(now + 0.44);
+    wobble.stop(now + 0.44);
+  }
+
+  function playPetSound(){
+    stopCatAudio();
+    playMeow();
+    setTimeout(()=> purrAudio.play().catch(()=>{}), 120);
+  }
+
+  cats.forEach(cat=>{
+    const card = document.createElement("div");
+    card.className = "cat-card";
+    card.setAttribute("role", "button");
+    card.tabIndex = 0;
+    card.setAttribute("aria-label", "Pet cat");
+
+    const img = document.createElement("img");
+    img.src = cat.src;
+    img.alt = "Cat";
+    img.draggable = false;
+
+    card.appendChild(img);
+
+    function spawnFx(x, y){
+      const el = document.createElement("div");
+      el.className = "pet-fx";
+      el.textContent = fxChars[Math.floor(Math.random() * fxChars.length)];
+      el.style.left = x + "px";
+      el.style.top = y + "px";
+      card.appendChild(el);
+      setTimeout(()=> el.remove(), 950);
+    }
+
+    function pet(clientX, clientY){
+      const rect = card.getBoundingClientRect();
+      const x = clientX != null ? clientX - rect.left : rect.width / 2;
+      const y = clientY != null ? clientY - rect.top : rect.height / 3;
+      spawnFx(x, y);
+      card.classList.remove("reacting");
+      void card.offsetWidth;
+      card.classList.add("reacting");
+      playPetSound();
+    }
+
+    card.addEventListener("click", (e)=> pet(e.clientX, e.clientY));
+    card.addEventListener("keydown", (e)=>{
+      if(e.key === "Enter" || e.key === " "){ e.preventDefault(); pet(); }
+    });
+
+    grid.appendChild(card);
+  });
+
+  toeHandlers[4].leave = stopCatAudio;
+})();
+
+
+/* =========================================================================
+   TOE 5 — Favourite Memories
+   ========================================================================= */
+(function toe5Gallery(){
+  const stage = document.getElementById("stage");
+  const dotsWrap = document.getElementById("dots");
   let current = 0;
   let elements = [];
+  let built = false;
 
   function buildGallery(){
-    if(mediaItems.length === 0) return; // keep empty state visible
+    if(built || mediaItems.length === 0) return;
+    built = true;
 
-    document.getElementById('emptyState').remove();
+    const emptyState = document.getElementById("emptyState");
+    if(emptyState) emptyState.remove();
 
     mediaItems.forEach((item, i)=>{
       let el;
-      if(item.type === 'video'){
-        el = document.createElement('video');
+      if(item.type === "video"){
+        el = document.createElement("video");
         el.src = item.src;
         el.controls = true;
         el.playsInline = true;
       } else {
-        el = document.createElement('img');
+        el = document.createElement("img");
         el.src = item.src;
-        el.alt = 'photo ' + (i+1);
+        el.alt = "photo " + (i + 1);
       }
-      el.addEventListener('error', ()=>{
-        el.replaceWith(Object.assign(document.createElement('div'),{
-          className:'empty-state',
-          innerHTML:'⚠️ failed to load <code>'+item.src+'</code>'
+      el.addEventListener("error", ()=>{
+        el.replaceWith(Object.assign(document.createElement("div"), {
+          className: "empty-state",
+          innerHTML: "⚠️ failed to load <code>" + item.src + "</code>"
         }));
       });
       stage.appendChild(el);
       elements.push(el);
 
-      const dot = document.createElement('div');
-      dot.className = 'dot';
-      dot.addEventListener('click', ()=>show(i));
+      const dot = document.createElement("div");
+      dot.className = "dot";
+      dot.addEventListener("click", ()=> show(i));
       dotsWrap.appendChild(dot);
     });
 
+    addNavButtons();
     show(0);
+  }
+
+  function pauseAllVideos(){
+    elements.forEach(el=>{ if(el.tagName === "VIDEO") el.pause(); });
   }
 
   function show(index){
     if(elements.length === 0) return;
-    // pause any playing videos
-    elements.forEach(el=>{ if(el.tagName === 'VIDEO') el.pause(); });
-
+    pauseAllVideos();
     current = (index + elements.length) % elements.length;
-    elements.forEach((el,i)=> el.classList.toggle('active', i === current));
-    [...dotsWrap.children].forEach((d,i)=> d.classList.toggle('active', i === current));
+    elements.forEach((el, i)=> el.classList.toggle("active", i === current));
+    [...dotsWrap.children].forEach((d, i)=> d.classList.toggle("active", i === current));
   }
 
   function addNavButtons(){
     if(mediaItems.length < 2) return;
-    const prev = document.createElement('button');
-    prev.className = 'nav-btn prev';
-    prev.setAttribute('aria-label','previous');
-    prev.innerHTML = '‹';
-    prev.addEventListener('click', ()=>show(current-1));
+    const prev = document.createElement("button");
+    prev.className = "nav-btn prev";
+    prev.setAttribute("aria-label", "previous");
+    prev.innerHTML = "‹";
+    prev.addEventListener("click", ()=> show(current - 1));
 
-    const next = document.createElement('button');
-    next.className = 'nav-btn next';
-    next.setAttribute('aria-label','next');
-    next.innerHTML = '›';
-    next.addEventListener('click', ()=>show(current+1));
+    const next = document.createElement("button");
+    next.className = "nav-btn next";
+    next.setAttribute("aria-label", "next");
+    next.innerHTML = "›";
+    next.addEventListener("click", ()=> show(current + 1));
 
     stage.appendChild(prev);
     stage.appendChild(next);
   }
 
-  buildGallery();
-  addNavButtons();
-
-  document.addEventListener('keydown', (e)=>{
-    if(elements.length === 0) return;
-    if(e.key === 'ArrowLeft') show(current-1);
-    if(e.key === 'ArrowRight') show(current+1);
+  document.addEventListener("keydown", (e)=>{
+    if(activeToe !== 5 || elements.length === 0) return;
+    if(e.key === "ArrowLeft") show(current - 1);
+    if(e.key === "ArrowRight") show(current + 1);
   });
+
+  toeHandlers[5].enter = buildGallery;
+  toeHandlers[5].leave = pauseAllVideos;
+})();
 </script>
 
 </body>
